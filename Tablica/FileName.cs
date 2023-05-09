@@ -8,8 +8,12 @@ namespace Tablica
 {
     public class ResizableArray<T>
     {
-        T[] values;
+        private T[] values;
         private int count;
+
+        public event EventHandler<T> ItemAdded;
+        public event EventHandler<int> SizeChanged;
+
         public void Add(T item)
         {
             if (count == values.Length)
@@ -28,10 +32,10 @@ namespace Tablica
 
             for (int i = 0; i < count; i++)
             {
-                newData[i] = data[i];
+                newData[i] = values[i];
             }
 
-            data = newData;
+            values = newData;
             SizeChanged?.Invoke(this, newSize);
         }
 
@@ -39,13 +43,37 @@ namespace Tablica
         {
             return count;
         }
+
+        public T this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= count)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                return values[index];
+            }
+            set
+            {
+                if (index < 0 || index >= count)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                values[index] = value;
+                ItemAdded?.Invoke(this, value);
+            }
+        }
     }
 
     public class Helper
     {
         public static bool isEqual(int expected, int actual)
         {
-
+            return expected == actual;
         }
     }
+
 }
