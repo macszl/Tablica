@@ -14,6 +14,21 @@ namespace Tablica
         public event EventHandler<T> ItemAdded;
         public event EventHandler<int> SizeChanged;
 
+        public ResizableArray() : this(4)
+        {
+        }
+
+        public ResizableArray(int initialCapacity)
+        {
+            if (initialCapacity < 0)
+            {
+                throw new ArgumentException("The initial capacity cannot be negative.");
+            }
+
+            values = new T[initialCapacity];
+            count = 0;
+        }
+
         public void Add(T item)
         {
             if (count == values.Length)
@@ -30,13 +45,9 @@ namespace Tablica
         {
             T[] newData = new T[newSize];
 
-            for (int i = 0; i < count; i++)
-            {
-                newData[i] = values[i];
-            }
+            Array.Copy(values, newData, count);
 
             values = newData;
-            SizeChanged?.Invoke(this, newSize);
         }
 
         public int getCount()
@@ -44,26 +55,39 @@ namespace Tablica
             return count;
         }
 
+
         public T this[int index]
         {
             get
             {
                 if (index < 0 || index >= count)
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(index));
                 }
 
                 return values[index];
             }
             set
             {
-                if (index < 0 || index >= count)
+                if (index < 0)
                 {
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(index));
+                }
+
+                if (index >= values.Length)
+                {
+                    Resize(index * 2);
                 }
 
                 values[index] = value;
+                int prevCount = count;
+                count = Math.Max(count, index + 1);
+               
                 ItemAdded?.Invoke(this, value);
+                if( prevCount != count )
+                {
+                    SizeChanged?.Invoke(this, count);
+                }
             }
         }
     }
@@ -72,7 +96,12 @@ namespace Tablica
     {
         public static bool isEqual(int expected, int actual)
         {
-            return expected == actual;
+            if (expected != actual)
+            {
+                throw new Exception("Expected value is not equal to actual value.");
+            }
+
+            return true;
         }
     }
 

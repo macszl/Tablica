@@ -77,7 +77,7 @@ array.ItemAdded += (sender, item) =>
 array.Add(1);
 array[0] = 2;
 
-Helper.isEqual(2, count);
+Helper.isEqual(1, count);
 
 //sprawdzamy, czy eventy nie są wywoływane, gdy rozmiar tablicy nie ulega zmianie
 array = new ResizableArray<int>();
@@ -97,7 +97,9 @@ array.ItemAdded += (sender, item) =>
 array.Add(1);
 array.Add(2);
 
-Helper.isEqual(0, count);
+array[1] = 1;
+array[0] = 0;
+Helper.isEqual(2, count);
 
 //sprawdzamy, czy zdarzenie SizeChanged jest wywoływane po zmianie rozmiaru tablicy
 array = new ResizableArray<int>();
@@ -116,6 +118,5 @@ array.Add(4);
 array.Add(5);
 array.Add(6);
 
-Helper.isEqual(1, count); // event powinien być wywołany tylko raz, przy pierwszej zmianie rozmiaru tablicy
-
+Helper.isEqual(6, count);
 Console.WriteLine("=== END OF ARRAY TESTS ===");
